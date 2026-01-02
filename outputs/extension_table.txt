@@ -1,0 +1,51 @@
+================================================================================
+EXTENSION: 2007-2025 (Full Sample Period)
+================================================================================
+
+Sample: All available events (full sample)
+N = 170 events
+Date range: 2008-04-10 00:00:00 to 2025-12-18 00:00:00
+
+Dependent Variable: abs_CAR_m5_p5 (Absolute Cumulative Abnormal Return)
+Estimation: OLS with Robust Standard Errors (HC1)
+
+
+================================================================
+                E1: Jaccard E2: Jac+Ctrl E3: Cosine E4: Cos+Ctrl
+----------------------------------------------------------------
+const           0.0138      0.0105       0.0293***  0.0253      
+                (0.0213)    (0.0242)     (0.0104)   (0.0213)    
+log_sim_jaccard -0.0072     -0.0093                             
+                (0.0093)    (0.0113)                            
+pessimism_lm    0.0347      0.0256       0.0134     0.0095      
+                (0.0323)    (0.0407)     (0.0220)   (0.0226)    
+int_jaccard     0.0111      0.0091                              
+                (0.0101)    (0.0151)                            
+n_tokens                    0.0000                  0.0000      
+                            (0.0000)                (0.0000)    
+time                        -0.0000**               -0.0000**   
+                            (0.0000)                (0.0000)    
+log_sim_cosine                           -0.0030    -0.0128     
+                                         (0.0392)   (0.0431)    
+int_cosine                               0.0159     0.0110      
+                                         (0.0420)   (0.0541)    
+R-squared       0.0027      0.0406       0.0015     0.0369      
+R-squared Adj.  -0.0153     0.0114       -0.0165    0.0076      
+Adj. R²         -0.015      0.011        -0.017     0.008       
+N               170         170          170        170         
+R²              0.003       0.041        0.002      0.037       
+================================================================
+Standard errors in parentheses.
+* p<.1, ** p<.05, ***p<.01
+
+Notes:
+- E1: Jaccard baseline (extended period)
+- E2: Jaccard + controls (n_tokens, time)
+- E3: Cosine baseline (alternative similarity)
+- E4: Cosine + controls (n_tokens, time)
+- log_sim_*: Log of similarity measure
+- pessimism_lm: Loughran-McDonald pessimism = (neg-pos)/(neg+pos)
+- int_*: Interaction term (log_similarity × pessimism_lm)
+- n_tokens: Document length (number of tokens)
+- time: Time trend (days since first event)
+- *** p<0.01, ** p<0.05, * p<0.1

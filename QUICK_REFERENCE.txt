@@ -1,0 +1,112 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                   ECB COMMUNICATION PROJECT                            ║
+║                      QUICK REFERENCE CARD                              ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+┌─ RUN PIPELINE ─────────────────────────────────────────────────────────┐
+│                                                                         │
+│  Full Pipeline:         python run_pipeline.py                         │
+│  Validate Data:         python validate_data.py                        │
+│  Single Script:         python src/08_regressions.py                   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─ OUTPUT FILES ─────────────────────────────────────────────────────────┐
+│                                                                         │
+│  Replication (2007-2013):  outputs/replication_table.txt               │
+│  Extension (2007-2025):    outputs/extension_table.txt                 │
+│  Full Dataset:             data/processed/regression_dataset.csv       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─ REGRESSION MODELS ────────────────────────────────────────────────────┐
+│                                                                         │
+│  REPLICATION (2007-2013)                                               │
+│  ├─ R1: Baseline (Jaccard)                                             │
+│  └─ R2: Baseline + Controls                                            │
+│                                                                         │
+│  EXTENSION (2007-2025)                                                 │
+│  ├─ E1: Jaccard Baseline                                               │
+│  ├─ E2: Jaccard + Controls                                             │
+│  ├─ E3: Cosine Baseline (robustness)                                   │
+│  └─ E4: Cosine + Controls (robustness)                                 │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─ KEY VARIABLES ────────────────────────────────────────────────────────┐
+│                                                                         │
+│  Dependent:        abs_CAR_m5_p5 (absolute cumulative abnormal return) │
+│                                                                         │
+│  Independent:                                                           │
+│  ├─ log_sim_jaccard     Log of Jaccard bigram similarity               │
+│  ├─ log_sim_cosine      Log of cosine similarity (alternative)         │
+│  ├─ pessimism_lm        Loughran-McDonald pessimism                    │
+│  ├─ int_jaccard         Interaction (log_sim_jaccard × pessimism)      │
+│  ├─ int_cosine          Interaction (log_sim_cosine × pessimism)       │
+│  ├─ n_tokens            Document length (control)                      │
+│  └─ time                Time trend (control)                           │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─ PIPELINE SEQUENCE ────────────────────────────────────────────────────┐
+│                                                                         │
+│  01_scrape_ecb.py              → data/raw/ecb_press_conferences_raw.csv│
+│  02_clean_text.py              → data/processed/ecb_text_features.csv  │
+│  03_similarity.py              → adds similarity_jaccard, similarity_co│
+│  04_sentiment_lm.py            → adds pessimism_lm                     │
+│  05_market_data.py             → data/market/eurostoxx50_daily.csv     │
+│  07_event_study_constant_mean  → data/processed/event_study_constant_m│
+│  08_regressions.py             → outputs/replication_table.txt         │
+│                                  outputs/extension_table.txt           │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─ EVENT STUDY DESIGN ───────────────────────────────────────────────────┐
+│                                                                         │
+│  Event Window:         [-5, +5] trading days                           │
+│  Estimation Window:    [-250, -50] trading days                        │
+│  Model:                Constant mean return                            │
+│  Market Index:         Eurostoxx 50 (^STOXX50E)                        │
+│  Returns:              Log returns                                     │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─ SAMPLE PERIODS ───────────────────────────────────────────────────────┐
+│                                                                         │
+│  Original Paper:       1999-2013 (proprietary data)                    │
+│  Yahoo Finance:        2007-present (public data)                      │
+│  Replication:          2007-2013 (overlap period)                      │
+│  Extension:            2007-2025 (full available)                      │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─ DOCUMENTATION ────────────────────────────────────────────────────────┐
+│                                                                         │
+│  README.md                     Main documentation                      │
+│  REGRESSION_SPECS.md           Regression specifications               │
+│  IMPLEMENTATION_SUMMARY.md     Implementation details                  │
+│  QUICK_REFERENCE.txt           This file                               │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─ TROUBLESHOOTING ──────────────────────────────────────────────────────┐
+│                                                                         │
+│  Missing data?         Run: python validate_data.py                    │
+│  Script errors?        Check paths are relative to project root        │
+│  Import errors?        pip install -r requirements.txt                 │
+│  NLTK errors?          Run NLTK downloads (see README.md)              │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─ EXPECTED RESULTS ─────────────────────────────────────────────────────┐
+│                                                                         │
+│  log_sim coefficient:  Negative (higher similarity → lower volatility) │
+│  pessimism coefficient: Positive (pessimism → higher volatility)       │
+│  Robustness:           Jaccard ≈ Cosine (if robust)                    │
+│  Sample size:          ~100-150 events (depends on data availability)  │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════
+ For detailed information, see README.md and REGRESSION_SPECS.md
+═══════════════════════════════════════════════════════════════════════════

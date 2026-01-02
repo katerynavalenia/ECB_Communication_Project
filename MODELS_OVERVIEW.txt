@@ -1,0 +1,121 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║          REPLICATION-FIRST IMPLEMENTATION - REGRESSION MODELS              ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+┌─ REPLICATION BENCHMARK (2007-2013) ───────────────────────────────────────┐
+│                                                                            │
+│  Sample Filter:  df[df["date"] <= "2013-12-31"]                           │
+│  Output File:    outputs/replication_table.txt                            │
+│                                                                            │
+│  MODEL R1: Jaccard Baseline                                               │
+│  ────────────────────────────────────────────────────────────────────     │
+│  abs_CAR_m5_p5 = β₀ + β₁·log_sim_jaccard + β₂·pessimism_lm               │
+│                      + β₃·int_jaccard + ε                                 │
+│                                                                            │
+│  MODEL R2: Cosine Robustness                                              │
+│  ────────────────────────────────────────────────────────────────────     │
+│  abs_CAR_m5_p5 = β₀ + β₁·log_sim_cosine + β₂·pessimism_lm                │
+│                      + β₃·int_cosine + ε                                  │
+│                                                                            │
+│  Purpose: Replicate original paper findings on overlap period             │
+│           Test robustness to similarity measure                           │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+
+┌─ EXTENSION (2007-2025 FULL SAMPLE) ───────────────────────────────────────┐
+│                                                                            │
+│  Sample Filter:  None (full sample)                                       │
+│  Output File:    outputs/extension_table.txt                              │
+│                                                                            │
+│  MODEL E1: Jaccard Baseline                                               │
+│  ────────────────────────────────────────────────────────────────────     │
+│  abs_CAR_m5_p5 = β₀ + β₁·log_sim_jaccard + β₂·pessimism_lm               │
+│                      + β₃·int_jaccard + ε                                 │
+│                                                                            │
+│  MODEL E2: Jaccard + Controls                                             │
+│  ────────────────────────────────────────────────────────────────────     │
+│  abs_CAR_m5_p5 = β₀ + β₁·log_sim_jaccard + β₂·pessimism_lm               │
+│                      + β₃·int_jaccard + β₄·n_tokens + β₅·time + ε         │
+│                                                                            │
+│  MODEL E3: Cosine Baseline                                                │
+│  ────────────────────────────────────────────────────────────────────     │
+│  abs_CAR_m5_p5 = β₀ + β₁·log_sim_cosine + β₂·pessimism_lm                │
+│                      + β₃·int_cosine + ε                                  │
+│                                                                            │
+│  MODEL E4: Cosine + Controls                                              │
+│  ────────────────────────────────────────────────────────────────────     │
+│  abs_CAR_m5_p5 = β₀ + β₁·log_sim_cosine + β₂·pessimism_lm                │
+│                      + β₃·int_cosine + β₄·n_tokens + β₅·time + ε          │
+│                                                                            │
+│  Purpose: Extend to modern period (2014-2025)                             │
+│           Test robustness to similarity measure and controls              │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+
+┌─ VARIABLE DEFINITIONS ────────────────────────────────────────────────────┐
+│                                                                            │
+│  Dependent Variable:                                                       │
+│  ├─ abs_CAR_m5_p5    Absolute CAR over [-5,+5] day window                │
+│                                                                            │
+│  Independent Variables:                                                    │
+│  ├─ log_sim_jaccard  log(Jaccard_bigram_similarity + 1e-8)               │
+│  ├─ log_sim_cosine   log(Cosine_BoW_similarity + 1e-8)                   │
+│  ├─ pessimism_lm     (negative - positive) / (negative + positive)       │
+│  ├─ int_jaccard      log_sim_jaccard × pessimism_lm                      │
+│  ├─ int_cosine       log_sim_cosine × pessimism_lm                       │
+│  ├─ n_tokens         Number of tokens (document length control)          │
+│  └─ time             Days since first event (time trend control)         │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+
+┌─ ESTIMATION DETAILS ──────────────────────────────────────────────────────┐
+│                                                                            │
+│  Method:             OLS (Ordinary Least Squares)                         │
+│  Standard Errors:    Heteroskedasticity-robust (HC1 / White)             │
+│  Implementation:     statsmodels.api.OLS(...).fit(cov_type="HC1")        │
+│  Missing Values:     Dropped automatically (missing="drop")               │
+│                                                                            │
+│  Significance Levels:                                                      │
+│  ├─ ***  p < 0.01                                                         │
+│  ├─ **   p < 0.05                                                         │
+│  └─ *    p < 0.10                                                         │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+
+┌─ OUTPUT FILES ────────────────────────────────────────────────────────────┐
+│                                                                            │
+│  outputs/replication_table.txt                                            │
+│  ├─ Models R1 and R2                                                      │
+│  ├─ Sample: 2007-2013 (overlap period)                                    │
+│  └─ Formatted table with N, R², Adj. R², stars                           │
+│                                                                            │
+│  outputs/extension_table.txt                                              │
+│  ├─ Models E1, E2, E3, E4                                                 │
+│  ├─ Sample: 2007-2025 (full sample)                                       │
+│  └─ Formatted table with N, R², Adj. R², stars                           │
+│                                                                            │
+│  data/processed/regression_dataset.csv                                    │
+│  ├─ Full dataset with all computed variables                             │
+│  ├─ Includes: date, year, CAR, all text features, all regression vars    │
+│  └─ Ready for custom analysis                                            │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+
+┌─ RUN COMMANDS ────────────────────────────────────────────────────────────┐
+│                                                                            │
+│  Full Pipeline:                                                            │
+│  $ python run_pipeline.py                                                 │
+│                                                                            │
+│  Event Study + Regressions Only:                                          │
+│  $ python src/07_event_study_constant_mean.py                            │
+│  $ python src/08_regressions.py                                          │
+│                                                                            │
+│  Verify Implementation:                                                    │
+│  $ python verify_implementation.py                                        │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════
+ All implementation requirements satisfied ✓
+ See REPLICATION_FIRST_IMPLEMENTATION.md for complete details
+═══════════════════════════════════════════════════════════════════════════
