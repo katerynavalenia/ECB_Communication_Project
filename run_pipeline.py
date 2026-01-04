@@ -24,9 +24,13 @@ SCRIPTS = [
     "src/02_clean_text.py",
     "src/03_similarity.py",
     "src/04_sentiment_lm.py",
+    "src/04b_risk_uncertainty.py",      # Extension 2: Risk vs Uncertainty
     "src/05_market_data.py",
+    "src/06_learning_over_time.py",     # Extension 1: Learning Over Time
     "src/07_event_study_constant_mean.py",
-    "src/08_regressions.py"
+    "src/08_regressions.py",
+    "src/09_extension_regressions.py",  # Extension regressions
+    "src/10_extension_figures.py",      # Extension figures
 ]
 
 def run_script(script_path):
@@ -90,9 +94,21 @@ def main():
         print("="*80)
         print("OUTPUT FILES:")
         print("="*80)
-        print("Replication table (2007-2013): outputs/replication_table.txt")
-        print("Extension table (2007-2025): outputs/extension_table.txt")
-        print("Regression dataset: data/processed/regression_dataset.csv")
+        print("\nCore Replication:")
+        print("  Replication table (2007-2013): outputs/replication_table.txt")
+        print("  Extension table (2007-2025): outputs/extension_table.txt")
+        print("  Regression dataset: data/processed/regression_dataset.csv")
+        print("\nExtension 1 - Learning Over Time:")
+        print("  Learning regressions: outputs/extension1_learning_table.txt")
+        print("  Learning LaTeX: outputs/extension1_learning_table.tex")
+        print("\nExtension 2 - Risk vs Uncertainty:")
+        print("  Risk/Uncertainty regressions: outputs/extension2_risk_uncertainty_table.txt")
+        print("  Risk/Uncertainty LaTeX: outputs/extension2_risk_uncertainty_table.tex")
+        print("\nCombined Extensions:")
+        print("  Combined table: outputs/extensions_combined_table.txt")
+        print("  Extended dataset: data/processed/regression_dataset_extended.csv")
+        print("\nFigures:")
+        print("  All figures: outputs/figures/")
         print("="*80)
         sys.exit(0)
 
