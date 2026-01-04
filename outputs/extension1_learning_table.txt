@@ -1,0 +1,64 @@
+================================================================================
+EXTENSION 1: LEARNING OVER TIME REGRESSIONS
+================================================================================
+
+Dependent Variable: |CAR(-5,+5)| (Absolute Cumulative Abnormal Return)
+Estimation: OLS with Robust Standard Errors (HC1)
+
+Model Specifications:
+  L1: Baseline (Jaccard similarity)
+  L2: Rolling window similarity (last 5 statements)
+  L3: Decay-weighted similarity (exponential decay)
+  L4: Time trend interaction (learning effect)
+  L5: Crisis regime interaction
+  L6: Early vs Late period interaction
+
+
+========================================================================
+                 L1:Base  L2:Roll  L3:Decay L4:Time  L5:Crisis L6:Period
+------------------------------------------------------------------------
+const            0.0138   0.0162   0.0144   0.0117   0.0288*** -0.0443  
+                 (0.0213) (0.0218) (0.0239) (0.0451) (0.0059)  (0.0859) 
+log_sim_jaccard  -0.0072                    -0.0149  0.0040*   -0.0425  
+                 (0.0093)                   (0.0215) (0.0024)  (0.0472) 
+pessimism_lm     0.0347   -0.0002  -0.0021  -0.0019  0.0192    -0.0086  
+                 (0.0323) (0.0185) (0.0203) (0.0174) (0.0120)  (0.0754) 
+int_jaccard      0.0111                                                 
+                 (0.0101)                                               
+log_sim_rolling5          -0.0068                                       
+                          (0.0096)                                      
+log_sim_decay                      -0.0080                              
+                                   (0.0112)                             
+time_trend_norm                             0.0158                      
+                                            (0.0684)                    
+sim_x_time                                  0.0179                      
+                                            (0.0314)                    
+crisis                                               -0.1483*           
+                                                     (0.0884)           
+sim_x_crisis                                         -0.0913*           
+                                                     (0.0477)           
+pess_x_crisis                                        -0.1145*           
+                                                     (0.0684)           
+late_period                                                    0.0697   
+                                                               (0.0864) 
+sim_x_late                                                     0.0409   
+                                                               (0.0474) 
+pess_x_late                                                    0.0146   
+                                                               (0.0774) 
+R-squared        0.0027   0.0040   0.0056   0.0383   0.1569    0.0245   
+R-squared Adj.   -0.0153  -0.0079  -0.0063  0.0150   0.1312    -0.0052  
+Adj. R²          -0.015   -0.008   -0.006   0.015    0.131     -0.005   
+N                170      170      170      170      170       170      
+R²               0.003    0.004    0.006    0.038    0.157     0.025    
+========================================================================
+Standard errors in parentheses.
+* p<.1, ** p<.05, ***p<.01
+
+Notes:
+- log_sim_rolling5: Log of avg similarity to last 5 statements
+- log_sim_decay: Log of decay-weighted similarity (λ=0.5)
+- time_trend_norm: Normalized time trend [0,1]
+- sim_x_time: Interaction (similarity × time trend)
+- crisis: Binary indicator for crisis periods
+- late_period: Second half of sample indicator
+- *** p<0.01, ** p<0.05, * p<0.1

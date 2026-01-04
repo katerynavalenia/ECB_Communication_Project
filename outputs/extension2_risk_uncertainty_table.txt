@@ -1,0 +1,61 @@
+================================================================================
+EXTENSION 2: RISK VS UNCERTAINTY REGRESSIONS
+================================================================================
+
+Dependent Variable: |CAR(-5,+5)| (Absolute Cumulative Abnormal Return)
+Estimation: OLS with Robust Standard Errors (HC1)
+
+Model Specifications:
+  U1: Baseline (overall pessimism)
+  U2: Risk index only
+  U3: Uncertainty index only
+  U4: Risk vs Uncertainty (horse race)
+  U5: Decomposed pessimism (risk + uncertainty + other)
+  U6: With similarity × risk/uncertainty interactions
+  U7: Uncertainty-to-risk ratio
+
+
+=====================================================================================
+                      U1:Base  U2:Risk   U3:Unc  U4:Both  U5:Decomp  U6:Int  U7:Ratio
+-------------------------------------------------------------------------------------
+const                 0.0138   0.0263** 0.0235** 0.0217*  0.0229*   0.0159   0.0216  
+                      (0.0213) (0.0111) (0.0104) (0.0126) (0.0125)  (0.0241) (0.0136)
+log_sim_jaccard       -0.0072  -0.0031  -0.0043  -0.0051  -0.0020   -0.0076  -0.0034 
+                      (0.0093) (0.0052) (0.0050) (0.0059) (0.0048)  (0.0110) (0.0059)
+pessimism_lm          0.0347                                                 0.0096  
+                      (0.0323)                                               (0.0181)
+int_jaccard           0.0111                                                         
+                      (0.0101)                                                       
+risk_z                         0.0032            0.0018             0.0064           
+                               (0.0039)          (0.0036)           (0.0133)         
+unc_z                                   0.0061   0.0057             -0.0031          
+                                        (0.0041) (0.0039)           (0.0123)         
+pessimism_risk                                            0.1226                     
+                                                          (0.0998)                   
+pessimism_uncertainty                                     0.1129                     
+                                                          (0.1655)                   
+pessimism_other                                           0.0046                     
+                                                          (0.0176)                   
+int_jaccard_risk                                                    0.0020           
+                                                                    (0.0062)         
+int_jaccard_unc                                                     -0.0036          
+                                                                    (0.0050)         
+log_unc_risk_ratio                                                           0.0017  
+                                                                             (0.0014)
+R-squared             0.0027   0.0072   0.0251   0.0271   0.0069    0.0303   0.0036  
+R-squared Adj.        -0.0153  -0.0047  0.0134   0.0095   -0.0172   0.0007   -0.0144 
+Adj. R²               -0.015   -0.005   0.013    0.010    -0.017    0.001    -0.014  
+N                     170      170      170      170      170       170      170     
+R²                    0.003    0.007    0.025    0.027    0.007     0.030    0.004   
+=====================================================================================
+Standard errors in parentheses.
+* p<.1, ** p<.05, ***p<.01
+
+Notes:
+- risk_z: Standardized risk language index
+- unc_z: Standardized uncertainty language index
+- pessimism_risk: Pessimism from risk-related words
+- pessimism_uncertainty: Pessimism from uncertainty-related words
+- pessimism_other: Residual pessimism
+- log_unc_risk_ratio: Log of uncertainty/risk language ratio
+- *** p<0.01, ** p<0.05, * p<0.1

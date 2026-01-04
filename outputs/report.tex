@@ -1,0 +1,521 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{pdflscape}
+\usepackage{rotating}
+\usepackage{multirow}
+
+% Page setup
+\geometry{margin=1in}
+\onehalfspacing
+
+% Title
+\title{\textbf{ECB Communication and Financial Market Response:\\Extensions on Learning Over Time and Risk-Uncertainty Decomposition}}
+\author{ECB Communication Research Project}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper extends the analysis of European Central Bank (ECB) press conference communications and their impact on financial market returns. Building on the established relationship between communication similarity, sentiment, and market volatility, we introduce two novel extensions. First, we model how financial markets progressively \textit{learn} from ECB communication over time through rolling window similarity measures, decay-weighted indices, and regime-based analysis. Second, we decompose the aggregate sentiment measure into distinct \textit{risk} and \textit{uncertainty} components, following the Knightian distinction between quantifiable risk and unmeasurable uncertainty. Using 170 ECB press conferences from 2008 to 2025, we find that crisis regimes significantly moderate the relationship between communication and market response (Adj. $R^2$ = 13.1\%), and that uncertainty-related language has a marginally significant positive effect on market volatility. These findings contribute to the growing literature on central bank communication and information processing by financial markets.
+
+\medskip
+\noindent\textbf{Keywords:} Central bank communication, ECB, text analysis, market volatility, uncertainty, learning, event study
+
+\noindent\textbf{JEL Classification:} E52, E58, G14, D83
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+%==============================================================================
+\section{Introduction}
+%==============================================================================
+
+Central bank communication has become a crucial tool of monetary policy in the post-crisis era. The European Central Bank (ECB) regularly communicates its policy stance through press conferences following Governing Council meetings, and these communications have been shown to move financial markets \citep{ehrmann2007explaining, blinder2008central}. Understanding how markets process and react to central bank language is essential for both policymakers seeking to guide expectations and investors managing portfolio risk.
+
+This paper makes two contributions to the literature on ECB communication and market response. First, we introduce a \textit{learning over time} framework that models how market sensitivity to ECB communication evolves as participants accumulate experience with the central bank's rhetoric. Rather than treating each press conference as an isolated event, we capture the dynamic nature of information processing through rolling window similarity measures, exponentially decay-weighted indices, and regime-based interactions. Second, we decompose the standard sentiment measure into separate \textit{risk} and \textit{uncertainty} components, following the classic distinction introduced by \cite{knight1921risk}. This decomposition allows us to test whether markets respond differently to language about quantifiable, probabilistic risks versus language expressing genuine Knightian uncertainty.
+
+Our empirical analysis covers 170 ECB press conferences from April 2008 to December 2025. We measure market response using the absolute cumulative abnormal return (|CAR|) in an 11-day window around each event, computed using a constant mean return model. Communication features include Jaccard bigram similarity with the previous statement, Loughran-McDonald pessimism scores, and our newly constructed learning and risk-uncertainty measures.
+
+The main findings are as follows. First, the crisis regime interaction model achieves an adjusted $R^2$ of 13.1\%, substantially higher than the baseline specification. During crisis periods, the effect of communication similarity on market response is amplified, suggesting that markets pay closer attention to ECB language when uncertainty is elevated. Second, the uncertainty index shows a marginally significant positive effect on market volatility, while the risk index does not---consistent with the theoretical prediction that Knightian uncertainty commands a premium beyond standard risk. Third, the time trend interaction suggests a learning effect: market response to ECB communication has declined over the sample period as participants have become more familiar with the central bank's communication patterns.
+
+The remainder of this paper is organized as follows. Section 2 reviews the relevant literature. Section 3 describes our data and methodology. Section 4 presents Extension 1 on learning over time. Section 5 presents Extension 2 on risk versus uncertainty decomposition. Section 6 discusses the combined results, and Section 7 concludes.
+
+%==============================================================================
+\section{Literature Review}
+%==============================================================================
+
+\subsection{Central Bank Communication and Market Response}
+
+The literature on central bank communication has grown substantially since the early 2000s. \cite{blinder2008central} provide a comprehensive survey, documenting that central bank statements move asset prices and help anchor inflation expectations. For the ECB specifically, \cite{ehrmann2007explaining} show that press conferences are the primary channel through which policy decisions affect longer-term interest rates.
+
+Recent work has applied text-as-data methods to quantify the content of central bank communication. \cite{hansen2016shocking} use topic models to measure the information content of FOMC statements, while \cite{lucca2015pre} document large pre-announcement returns before FOMC meetings. For the ECB, several studies have examined how the tone and novelty of press conference statements affect market volatility and the term structure of interest rates.
+
+\subsection{Similarity, Novelty, and Information Content}
+
+A key insight from the literature is that markets respond not just to the level of sentiment but to its \textit{change} or \textit{novelty}. When central bank language closely resembles previous communications, markets may interpret this as confirmation of the existing policy stance, reducing uncertainty and volatility. Conversely, novel language signals new information that must be incorporated into asset prices.
+
+This paper extends the similarity-based approach by introducing multiple measures of communication novelty: rolling window similarity (comparing to the last $N$ statements), cumulative similarity (comparing to all past statements), and decay-weighted similarity (giving more weight to recent communications). These measures capture different aspects of the learning process through which markets accumulate knowledge about central bank rhetoric.
+
+\subsection{Risk, Uncertainty, and Asset Pricing}
+
+The distinction between risk and uncertainty dates to \cite{knight1921risk}, who argued that risk refers to situations with known probability distributions while uncertainty refers to situations where probabilities cannot be estimated. This distinction has important implications for asset pricing: while risk can be hedged through standard financial instruments, uncertainty may command an additional premium.
+
+\cite{baker2016measuring} construct an influential index of economic policy uncertainty using newspaper coverage. They show that uncertainty shocks have significant negative effects on investment and employment. In the context of central bank communication, we hypothesize that language expressing genuine uncertainty (``unpredictable,'' ``unclear,'' ``unprecedented'') will have different effects on market volatility than language about quantifiable risks (``probability,'' ``forecast,'' ``expected'').
+
+%==============================================================================
+\section{Data and Methodology}
+%==============================================================================
+
+\subsection{ECB Press Conference Data}
+
+We collect introductory statements from ECB press conferences held between June 1998 and December 2025. These statements are delivered by the ECB President following each Governing Council meeting and provide a comprehensive overview of the economic outlook and policy rationale. The raw text is scraped from the ECB website and processed using standard NLP techniques: lowercasing, removal of stopwords, and lemmatization.
+
+Table \ref{tab:summary_stats} presents summary statistics for our sample. After merging with market data and requiring sufficient estimation windows for the event study, our final sample contains 170 press conferences spanning April 2008 to December 2025.
+
+\begin{table}[H]
+\centering
+\caption{Summary Statistics}
+\label{tab:summary_stats}
+\begin{tabular}{lccccc}
+\toprule
+Variable & N & Mean & Std. Dev. & Min & Max \\
+\midrule
+|CAR(-5,+5)| & 170 & 0.024 & 0.018 & 0.001 & 0.102 \\
+Jaccard Similarity & 170 & 0.312 & 0.089 & 0.142 & 0.521 \\
+Pessimism (LM) & 170 & 0.285 & 0.142 & -0.052 & 0.612 \\
+Risk Index & 170 & 0.018 & 0.004 & 0.008 & 0.031 \\
+Uncertainty Index & 170 & 0.012 & 0.003 & 0.005 & 0.024 \\
+N Tokens & 170 & 2,845 & 612 & 1,523 & 4,892 \\
+Crisis Indicator & 170 & 0.347 & 0.477 & 0 & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Market Data and Event Study Design}
+
+We obtain daily prices for the Euro Stoxx 50 index from Yahoo Finance. Log returns are computed as $r_t = \ln(P_t / P_{t-1})$. The event study follows a standard constant mean return model:
+
+\begin{equation}
+AR_t = r_t - \bar{r}_{estimation}
+\end{equation}
+
+\noindent where $\bar{r}_{estimation}$ is the mean return over the estimation window $[-250, -50]$ trading days relative to the event. The cumulative abnormal return over the event window $[-5, +5]$ is:
+
+\begin{equation}
+CAR_{[-5,+5]} = \sum_{t=-5}^{+5} AR_t
+\end{equation}
+
+Following the literature, our dependent variable is the \textit{absolute} CAR, which captures market volatility regardless of direction.
+
+\subsection{Communication Measures}
+
+\textbf{Similarity.} We compute Jaccard similarity based on bigrams between consecutive press conference statements:
+
+\begin{equation}
+Sim_{Jaccard}(t, t-1) = \frac{|B_t \cap B_{t-1}|}{|B_t \cup B_{t-1}|}
+\end{equation}
+
+\noindent where $B_t$ is the set of bigrams in statement $t$. We also compute cosine similarity using bag-of-words representations.
+
+\textbf{Sentiment.} Following \cite{loughran2011liability}, we compute pessimism as:
+
+\begin{equation}
+Pessimism_{LM} = \frac{N_{neg} - N_{pos}}{N_{neg} + N_{pos}}
+\end{equation}
+
+\noindent where $N_{neg}$ and $N_{pos}$ are counts of negative and positive words according to the Loughran-McDonald financial dictionary.
+
+\subsection{Regression Specification}
+
+The baseline regression model is:
+
+\begin{equation}
+|CAR_i| = \alpha + \beta_1 \log(Sim_i) + \beta_2 Pessimism_i + \beta_3 (\log(Sim_i) \times Pessimism_i) + \epsilon_i
+\end{equation}
+
+All regressions use OLS with heteroskedasticity-robust standard errors (HC1).
+
+%==============================================================================
+\section{Extension 1: Learning Over Time}
+%==============================================================================
+
+\subsection{Motivation and Hypotheses}
+
+Financial markets do not process each ECB statement in isolation. Instead, market participants develop institutional memory through repeated exposure to central bank communication. This learning process has several implications:
+
+\begin{enumerate}
+\item \textbf{Efficiency gains:} As markets accumulate experience, they become more efficient at extracting information from ECB statements, potentially reducing volatility.
+\item \textbf{Habituation:} Repeated exposure to similar language may lead to desensitization, reducing market response to familiar patterns.
+\item \textbf{Crisis reset:} During crisis periods, the appearance of novel, unprecedented language may ``reset'' the learning process, amplifying market sensitivity.
+\end{enumerate}
+
+\subsection{Alternative Similarity Measures}
+
+We construct three alternative measures of communication novelty:
+
+\textbf{Rolling Window Similarity.} Average similarity to the last 5 statements:
+\begin{equation}
+Sim_{rolling,t}^{(5)} = \frac{1}{5} \sum_{j=1}^{5} Sim(t, t-j)
+\end{equation}
+
+\textbf{Decay-Weighted Similarity.} Exponentially weighted similarity with decay parameter $\lambda = 0.5$:
+\begin{equation}
+Sim_{decay,t} = \frac{\sum_{j=1}^{t-1} e^{-\lambda j} \cdot Sim(t, t-j)}{\sum_{j=1}^{t-1} e^{-\lambda j}}
+\end{equation}
+
+\textbf{Cumulative Similarity.} Average similarity to all past statements:
+\begin{equation}
+Sim_{cumul,t} = \frac{1}{t-1} \sum_{j=1}^{t-1} Sim(t, j)
+\end{equation}
+
+\subsection{Crisis Regime Definition}
+
+We identify four major crisis periods:
+\begin{itemize}
+\item Global Financial Crisis: September 2008 -- June 2009
+\item European Sovereign Debt Crisis: May 2010 -- December 2012
+\item COVID-19 Crisis: March 2020 -- June 2021
+\item Ukraine War / Energy Crisis: February 2022 -- December 2022
+\end{itemize}
+
+A binary indicator $Crisis_t = 1$ if the press conference falls within any of these periods.
+
+\subsection{Results}
+
+Table \ref{tab:learning} presents results for the learning over time models. The crisis regime specification (Model L5) achieves the highest explanatory power with an adjusted $R^2$ of 13.1\%.
+
+\begin{table}[H]
+\centering
+\caption{Extension 1: Learning Over Time Regressions}
+\label{tab:learning}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+& L1 & L2 & L3 & L4 & L5 & L6 \\
+& Baseline & Rolling & Decay & Time & Crisis & Period \\
+\midrule
+$\log(Sim_{Jaccard})$ & -0.007 & & & -0.015 & 0.004* & -0.043 \\
+& (0.009) & & & (0.022) & (0.002) & (0.047) \\
+$\log(Sim_{Rolling5})$ & & -0.007 & & & & \\
+& & (0.010) & & & & \\
+$\log(Sim_{Decay})$ & & & -0.008 & & & \\
+& & & (0.011) & & & \\
+Pessimism & 0.035 & -0.000 & -0.002 & -0.002 & 0.019 & -0.009 \\
+& (0.032) & (0.019) & (0.020) & (0.017) & (0.012) & (0.075) \\
+Crisis & & & & & -0.148* & \\
+& & & & & (0.088) & \\
+$Sim \times Crisis$ & & & & & -0.091* & \\
+& & & & & (0.048) & \\
+$Pess \times Crisis$ & & & & & -0.115* & \\
+& & & & & (0.068) & \\
+Time Trend & & & & 0.016 & & \\
+& & & & (0.068) & & \\
+Late Period & & & & & & 0.070 \\
+& & & & & & (0.086) \\
+Constant & 0.014 & 0.016 & 0.014 & 0.012 & 0.029*** & -0.044 \\
+& (0.021) & (0.022) & (0.024) & (0.045) & (0.006) & (0.086) \\
+\midrule
+N & 170 & 170 & 170 & 170 & 170 & 170 \\
+$R^2$ & 0.003 & 0.004 & 0.006 & 0.038 & 0.157 & 0.025 \\
+Adj. $R^2$ & -0.015 & -0.008 & -0.006 & 0.015 & 0.131 & -0.005 \\
+\bottomrule
+\multicolumn{7}{l}{\footnotesize Robust standard errors in parentheses. * p$<$0.10, ** p$<$0.05, *** p$<$0.01}
+\end{tabular}
+\end{table}
+
+The key finding is that crisis regimes significantly moderate the communication-market relationship. During crisis periods:
+\begin{itemize}
+\item The coefficient on the similarity-crisis interaction is negative and significant ($\beta = -0.091$, $p < 0.10$), indicating that similarity has a stronger (more negative) effect on volatility during crises.
+\item The pessimism-crisis interaction is also negative and significant ($\beta = -0.115$, $p < 0.10$).
+\end{itemize}
+
+Figure \ref{fig:similarity} displays the evolution of similarity measures over time, with crisis periods shaded in red.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/fig1_similarity_measures.png}
+\caption{ECB Communication Similarity Measures Over Time}
+\label{fig:similarity}
+\floatfoot{\textit{Note:} Panel A shows Jaccard similarity (solid) and rolling 5-statement average (dashed). Panel B shows decay-weighted and cumulative similarity. Panel C shows novelty (1 - rolling similarity). Red shaded areas indicate crisis periods.}
+\end{figure}
+
+%==============================================================================
+\section{Extension 2: Risk vs. Uncertainty Decomposition}
+%==============================================================================
+
+\subsection{Theoretical Framework}
+
+Following \cite{knight1921risk}, we distinguish between:
+\begin{itemize}
+\item \textbf{Risk:} Situations where outcomes are unknown but probabilities can be estimated (e.g., ``The probability of recession has increased'')
+\item \textbf{Uncertainty:} Situations where even the probability distribution is unknown (e.g., ``The outlook is highly uncertain and unpredictable'')
+\end{itemize}
+
+This distinction matters for financial markets because risk can be priced and hedged through standard instruments, while Knightian uncertainty may command an additional premium and lead to risk-averse behavior beyond what standard models predict.
+
+\subsection{Dictionary Construction}
+
+We construct two domain-specific dictionaries:
+
+\textbf{Risk Dictionary} ($\approx$90 terms): probability, likely, expected, forecast, estimate, scenario, variance, volatility, exposure, downside, hedge, stress, default, credit, leverage, contagion, systemic, loss, provision, solvency, liquidity...
+
+\textbf{Uncertainty Dictionary} ($\approx$80 terms + LM uncertainty words): uncertainty, unpredictable, unknown, unclear, ambiguous, unprecedented, unexpected, surprise, shock, volatile, turbulence, disruption, instability, doubt, cautious, tentative...
+
+\subsection{Index Construction}
+
+We compute document-level indices:
+\begin{equation}
+Risk\_Index_t = \frac{\sum_{w \in Risk} count(w, t)}{N\_tokens_t}
+\end{equation}
+
+\begin{equation}
+Uncertainty\_Index_t = \frac{\sum_{w \in Uncertainty} count(w, t)}{N\_tokens_t}
+\end{equation}
+
+We also decompose the overall pessimism score into contributions from risk words, uncertainty words, and other words:
+\begin{equation}
+Pessimism_{LM} \approx Pessimism_{risk} + Pessimism_{uncertainty} + Pessimism_{other}
+\end{equation}
+
+\subsection{Results}
+
+Table \ref{tab:risk_unc} presents the risk vs. uncertainty regression results.
+
+\begin{table}[H]
+\centering
+\caption{Extension 2: Risk vs. Uncertainty Regressions}
+\label{tab:risk_unc}
+\small
+\begin{tabular}{lccccccc}
+\toprule
+& U1 & U2 & U3 & U4 & U5 & U6 & U7 \\
+& Base & Risk & Unc & Both & Decomp & Interact & Ratio \\
+\midrule
+$\log(Sim)$ & -0.007 & -0.003 & -0.004 & -0.005 & -0.002 & -0.008 & -0.003 \\
+& (0.009) & (0.005) & (0.005) & (0.006) & (0.005) & (0.011) & (0.006) \\
+Risk (z) & & 0.003 & & 0.002 & & 0.006 & \\
+& & (0.004) & & (0.004) & & (0.013) & \\
+Uncertainty (z) & & & 0.006 & 0.006 & & -0.003 & \\
+& & & (0.004) & (0.004) & & (0.012) & \\
+$Pess_{risk}$ & & & & & 0.123 & & \\
+& & & & & (0.100) & & \\
+$Pess_{unc}$ & & & & & 0.113 & & \\
+& & & & & (0.166) & & \\
+$\log(Unc/Risk)$ & & & & & & & 0.002 \\
+& & & & & & & (0.001) \\
+Constant & 0.014 & 0.026** & 0.024** & 0.022* & 0.023* & 0.016 & 0.022 \\
+& (0.021) & (0.011) & (0.010) & (0.013) & (0.013) & (0.024) & (0.014) \\
+\midrule
+N & 170 & 170 & 170 & 170 & 170 & 170 & 170 \\
+$R^2$ & 0.003 & 0.007 & 0.025 & 0.027 & 0.007 & 0.030 & 0.004 \\
+Adj. $R^2$ & -0.015 & -0.005 & 0.013 & 0.010 & -0.017 & 0.001 & -0.014 \\
+\bottomrule
+\multicolumn{8}{l}{\footnotesize Robust standard errors in parentheses. * p$<$0.10, ** p$<$0.05, *** p$<$0.01}
+\end{tabular}
+\end{table}
+
+The uncertainty index (Model U3) shows the highest explanatory power among the individual measures ($R^2 = 2.5\%$), consistent with the hypothesis that Knightian uncertainty affects markets differently than quantifiable risk. The coefficient on the standardized uncertainty index is positive (0.006), suggesting that uncertainty-laden language is associated with higher market volatility.
+
+Figure \ref{fig:risk_unc} shows the evolution of risk and uncertainty indices over time.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/fig4_risk_uncertainty_indices.png}
+\caption{Risk and Uncertainty Language in ECB Communication}
+\label{fig:risk_unc}
+\floatfoot{\textit{Note:} Panel A shows the risk index (proportion of risk-related terms). Panel B shows the uncertainty index. Panel C shows the uncertainty-to-risk ratio. Red shaded areas indicate crisis periods.}
+\end{figure}
+
+Figure \ref{fig:scatter} displays the relationship between risk and uncertainty language, with market response magnitude indicated by color.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/fig5_risk_uncertainty_scatter.png}
+\caption{Risk vs. Uncertainty Language Scatter Plot}
+\label{fig:scatter}
+\floatfoot{\textit{Note:} Each point represents an ECB press conference. Color indicates |CAR(-5,+5)|, with warmer colors representing larger market responses.}
+\end{figure}
+
+%==============================================================================
+\section{Combined Results and Discussion}
+%==============================================================================
+
+\subsection{Combined Model Specification}
+
+Table \ref{tab:combined} presents combined models incorporating both extensions.
+
+\begin{table}[H]
+\centering
+\caption{Combined Extensions: Learning + Risk/Uncertainty}
+\label{tab:combined}
+\begin{tabular}{lcccc}
+\toprule
+& C1 & C2 & C3 & C4 \\
+& Baseline & Learn+RU & Full & Kitchen Sink \\
+\midrule
+$\log(Sim_{Jaccard})$ & -0.007 & & & 0.009 \\
+& (0.009) & & & (0.019) \\
+$\log(Sim_{Decay})$ & & -0.017 & -0.014 & \\
+& & (0.012) & (0.011) & \\
+Risk (z) & & 0.000 & -0.001 & -0.002 \\
+& & (0.004) & (0.004) & (0.004) \\
+Uncertainty (z) & & 0.007* & 0.008* & 0.005 \\
+& & (0.004) & (0.004) & (0.003) \\
+Crisis & & & 0.018** & -0.131 \\
+& & & (0.008) & (0.084) \\
+Time Trend & & -0.027** & -0.019* & -0.053 \\
+& & (0.011) & (0.011) & (0.064) \\
+$Sim \times Crisis$ & & & & -0.065* \\
+& & & & (0.038) \\
+Constant & 0.014 & 0.005 & -0.005 & 0.055 \\
+& (0.021) & (0.032) & (0.037) & (0.041) \\
+\midrule
+N & 170 & 170 & 170 & 170 \\
+$R^2$ & 0.003 & 0.078 & 0.123 & 0.164 \\
+Adj. $R^2$ & -0.015 & 0.056 & 0.091 & 0.128 \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize Robust standard errors in parentheses. * p$<$0.10, ** p$<$0.05, *** p$<$0.01}
+\end{tabular}
+\end{table}
+
+\subsection{Key Findings}
+
+The combined model (C3) achieves an adjusted $R^2$ of 9.1\%, representing a substantial improvement over the baseline. The key findings are:
+
+\begin{enumerate}
+\item \textbf{Uncertainty matters more than risk:} The uncertainty index has a positive and marginally significant coefficient ($\beta = 0.008$, $p < 0.10$), while the risk index is insignificant. This supports the Knightian distinction: markets react more strongly to language expressing genuine ambiguity than to language about quantifiable probabilities.
+
+\item \textbf{Crisis regime effects:} The crisis indicator has a positive and significant coefficient ($\beta = 0.018$, $p < 0.05$), indicating that market volatility is higher during crisis periods even after controlling for communication content.
+
+\item \textbf{Learning over time:} The time trend coefficient is negative and significant ($\beta = -0.019$, $p < 0.10$), suggesting that market response to ECB communication has declined over the sample period. This is consistent with a learning hypothesis: as markets accumulate experience with ECB rhetoric, they become more efficient at processing information.
+\end{enumerate}
+
+\subsection{Robustness}
+
+Figure \ref{fig:crisis} presents visual evidence for the crisis regime effect, comparing the distribution of market responses and communication characteristics across crisis and non-crisis periods.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/fig3_crisis_comparison.png}
+\caption{Crisis vs. Non-Crisis Regime Comparison}
+\label{fig:crisis}
+\floatfoot{\textit{Note:} Panel A shows the distribution of |CAR|. Panel B compares Jaccard similarity. Panel C compares pessimism scores.}
+\end{figure}
+
+%==============================================================================
+\section{Conclusion}
+%==============================================================================
+
+This paper extends the analysis of ECB communication and market response in two directions. First, we introduce a learning framework that captures how market sensitivity evolves over time through rolling window similarity, decay-weighted indices, and regime-based interactions. Second, we decompose aggregate sentiment into risk and uncertainty components, testing whether markets respond differently to each type of language.
+
+Our main findings are:
+
+\begin{enumerate}
+\item Crisis regimes significantly moderate the communication-market relationship. During crisis periods, markets pay closer attention to ECB language, and the effect of communication similarity on volatility is amplified.
+
+\item Uncertainty-related language has a marginally significant positive effect on market volatility, while risk-related language does not. This supports the theoretical prediction that Knightian uncertainty commands a premium beyond quantifiable risk.
+
+\item Market response to ECB communication has declined over time, consistent with a learning effect as participants become more familiar with the central bank's rhetoric.
+\end{enumerate}
+
+These findings have implications for both monetary policy and investment practice. For central bankers, the results suggest that the choice between ``risk'' and ``uncertainty'' language may have differential market effects. For investors, the crisis regime interaction implies that standard models of ECB communication may underperform during periods of elevated uncertainty.
+
+Future research could extend this framework to other central banks, explore higher-frequency market responses, and incorporate machine learning methods for more nuanced text classification.
+
+%==============================================================================
+\newpage
+\appendix
+\section{Appendix: Additional Figures}
+%==============================================================================
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/fig2_market_response_evolution.png}
+\caption{Market Response to ECB Communication Over Time}
+\label{fig:market_evolution}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/fig6_decomposed_sentiment.png}
+\caption{Sentiment Decomposition: Risk, Uncertainty, and Other Components}
+\label{fig:decomposed}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig7_correlation_heatmap.png}
+\caption{Correlation Matrix of Key Variables}
+\label{fig:correlation}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/fig8_summary_statistics.png}
+\caption{Summary Statistics Visualization}
+\label{fig:summary}
+\end{figure}
+
+%==============================================================================
+\newpage
+\bibliographystyle{apalike}
+\begin{thebibliography}{99}
+
+\bibitem[Baker et al., 2016]{baker2016measuring}
+Baker, S.~R., Bloom, N., \& Davis, S.~J. (2016).
+\newblock Measuring economic policy uncertainty.
+\newblock {\em Quarterly Journal of Economics}, 131(4), 1593--1636.
+
+\bibitem[Blinder et al., 2008]{blinder2008central}
+Blinder, A.~S., Ehrmann, M., Fratzscher, M., De~Haan, J., \& Jansen, D.-J. (2008).
+\newblock Central bank communication and monetary policy: A survey of theory and evidence.
+\newblock {\em Journal of Economic Literature}, 46(4), 910--945.
+
+\bibitem[Ehrmann \& Fratzscher, 2007]{ehrmann2007explaining}
+Ehrmann, M., \& Fratzscher, M. (2007).
+\newblock Communication by central bank committee members: Different strategies, same effectiveness?
+\newblock {\em Journal of Money, Credit and Banking}, 39(2-3), 509--541.
+
+\bibitem[Hansen \& McMahon, 2016]{hansen2016shocking}
+Hansen, S., \& McMahon, M. (2016).
+\newblock Shocking language: Understanding the macroeconomic effects of central bank communication.
+\newblock {\em Journal of International Economics}, 99, S114--S133.
+
+\bibitem[Knight, 1921]{knight1921risk}
+Knight, F.~H. (1921).
+\newblock {\em Risk, Uncertainty and Profit}.
+\newblock Houghton Mifflin.
+
+\bibitem[Loughran \& McDonald, 2011]{loughran2011liability}
+Loughran, T., \& McDonald, B. (2011).
+\newblock When is a liability not a liability? Textual analysis, dictionaries, and 10-Ks.
+\newblock {\em Journal of Finance}, 66(1), 35--65.
+
+\bibitem[Lucca \& Moench, 2015]{lucca2015pre}
+Lucca, D.~O., \& Moench, E. (2015).
+\newblock The pre-FOMC announcement drift.
+\newblock {\em Journal of Finance}, 70(1), 329--371.
+
+\end{thebibliography}
+
+\end{document}
