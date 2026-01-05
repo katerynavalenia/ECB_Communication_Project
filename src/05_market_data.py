@@ -57,7 +57,7 @@ else:
 df["date"] = pd.to_datetime(df["date"])
 df = df.sort_values("date").reset_index(drop=True)
 
-# ✅ log returns (as in the paper)
+# log returns (as in the paper)
 df["return"] = np.log(df["price"]).diff()
 
 df = df.dropna()
